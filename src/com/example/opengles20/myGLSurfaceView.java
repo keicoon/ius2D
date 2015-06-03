@@ -1,6 +1,6 @@
 package com.example.opengles20;
 
-import game.SceneINGAME;
+import game.SceneLOADING;
 import ius.AtlasManager;
 import ius.CameraManager;
 import ius.FontManager;
@@ -20,7 +20,7 @@ public class myGLSurfaceView extends GLSurfaceView{
 
 	// openGLES2.0과 관련된 변수
 	private final myGLRenderer mRenderer;
-	private final Scene currentScene;
+	private Scene currentScene;
 	// engine에서 사용하는 Manager 변수
 	public ObjectManager objectmanager;
 	public final AtlasManager atlasManager;
@@ -40,13 +40,13 @@ public class myGLSurfaceView extends GLSurfaceView{
 		//Initialize managers
 		objectmanager = new ObjectManager();
 		atlasManager = new AtlasManager();
-		fontManager = new FontManager("Roboto-Regular.ttf", context);
+		fontManager = new FontManager("font/Roboto-Regular.ttf", context);//Roboto-Regular whitecat
 		timeManager = new TimeManager();
 		inputManager = new InputManager();
 		soundManager = new SoundManager(context);
 		
 		//start first Scene
-		currentScene = new SceneINGAME(context, this);
+		currentScene = new SceneLOADING(context, this);
 		
 		//set renderer
 		mRenderer = new myGLRenderer(context, this);
@@ -70,11 +70,12 @@ public class myGLSurfaceView extends GLSurfaceView{
 			return false;
 		}
 	}
-	public void ChangeScene(Scene prev, Scene next){
-		prev.Destroy();
+	public void ChangeScene(Scene current, Scene next){
+		current.Destroy();
 		next.Init();
 		
-		prev = null;
+		current = null;
+		currentScene = next;
 		mRenderer.SetCurrentScene(next);
 	}
 	

@@ -20,18 +20,19 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
 	
 	public static final float[] mMVPMatrix = new float[16];								// model + view + projection
 	//private final float[] mLightPosInWorldSpace = new float[4];							// 광원 월드 위치 정보
-	private float[] mLightModelMatrix = new float[16];									// 광원 매트릭스 정보
+	//private float[] mLightModelMatrix = new float[16];									// 광원 매트릭스 정보
 	//private final float[] mLightPosInModelSpace = new float[] {0.0f, 0.0f, 0.0f, 1.0f};	// 광원 모델 위치 정보
 	
 	public static final float[] mProjectionMatrix = new float[16];						// 투영 매트릭스
 	public static final float[] mViewMatrix = new float[16];							// 뷰 매트릭스
-	public static final float[] mLightPosInEyeSpace = new float[4];						// 광원 정보를 뷰로 매핑한 매트릭스
+	//public static final float[] mLightPosInEyeSpace = new float[4];						// 광원 정보를 뷰로 매핑한 매트릭스
 	
 	public myGLSurfaceView mGL20;
 	private Context mContext;				
-	public static int mObjectProgramHandle;		// Object Shader Handle
-	public static int mFontProgramHandle;		// Font Shader Handle
-	public static int mBWObjectProgramHandle;	// black&white Shader Handle
+	public static int mObjectProgramHandle;			// Object Shader Handle
+	public static int mFontProgramHandle;			// Font Shader Handle
+	public static int mBWObjectProgramHandle;		// black&white Shader Handle
+	public static int mOutlineObjectProgramHandle;	// outline Shader Handle
 	// 게임 화면 크기
 	// 일반적인 화면 resolution은 1280x720 임
     public static float   mScreenWidth = 1280f;
@@ -89,6 +90,13 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
         mBWObjectProgramHandle = ShaderHelper.createAndLinkProgram(bwVertexShaderHandle, bwFragmentShaderHandle, 
         		new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
         
+        //final String outlineVertexShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_vertex_shader);        	       
+        //final String outlineFragmentShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_fragment_shader);    
+		//final int outlineVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, outlineVertexShader);
+		//final int outlineFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, outlineFragmentShader);
+        //mOutlineObjectProgramHandle = ShaderHelper.createAndLinkProgram(outlineVertexShaderHandle, outlineFragmentShaderHandle, 
+        //		new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
+        
         
         //Initialize GLES20
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -97,27 +105,25 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
 		
 		//Initialize basic Scene 
 		mFrameCounter.resetFrameCounter();
-		mGL20.objectmanager.Create(100);
+		//TODO 주의 < 리스트 갯수를 사용자가 지정할수 있음 >
+		mGL20.objectmanager.Create(200);
 		mGL20.fontManager.FontLoad();
 		
 		currentScene.Init();
 	}
 	/* 매 프레임마다 실행되는 드로우 함수 */
 	@Override
-	public void onDrawFrame(GL10 gl) {
-		// 프레임 간격을 얻음 < ms단위 >
-		long elapsed = mFrameCounter.Count();
-		
+	public void onDrawFrame(GL10 gl) {	
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-		Matrix.setIdentityM(mLightModelMatrix, 0);
-        Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 1.0f);
-        
+		//Matrix.setIdentityM(mLightModelMatrix, 0);
+        //Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 1.0f);
        // Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
        // Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);                        
   
         // 일반적으로 Object를 그리기 떄문에 호출함
-		currentScene.run(elapsed);
+        // 프레임 간격을 얻음 < ms단위 >
+		currentScene.run(mFrameCounter.Count());
 		
 		// 빛을 화면에 출력할 때 호출함
 		//drawLight(mPointProgramHandle);
@@ -130,7 +136,7 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
 	    pScreenHeight = height;
 		GLES20.glViewport(0, 0, width, height);
 		
-		Matrix.orthoM(mProjectionMatrix, 0, 0f, width, 0.0f, height, 0, 50);
+		Matrix.orthoM(mProjectionMatrix, 0, 0f, width, 0.0f, height, 0, 1);
 		Matrix.setLookAtM(mViewMatrix, 0, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 		Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 		SetupScaling();

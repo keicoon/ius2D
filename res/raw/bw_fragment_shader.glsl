@@ -16,11 +16,11 @@ void main()
     //gl_FragColor = vec4(gray, gray, gray, normalColor.a); 
     
     //shepia
-    gl_FragColor = vec4(0.393*normalColor.r + 0.769*normalColor.g + 0.189*normalColor.b,
-    					0.349*normalColor.r + 0.686*normalColor.g + 0.168*normalColor.b,
-    					0.272*normalColor.r + 0.534*normalColor.g + 0.131*normalColor.b,
-    					normalColor.a);
+    //gl_FragColor = vec4(0.393*normalColor.r + 0.769*normalColor.g + 0.189*normalColor.b,
+    //					0.349*normalColor.r + 0.686*normalColor.g + 0.168*normalColor.b,
+    //					0.272*normalColor.r + 0.534*normalColor.g + 0.131*normalColor.b,
+    //					normalColor.a);
     
     //default
-    //gl_FragColor = (v_Color * texture2D(u_Texture, v_TexCoordinate));
+    gl_FragColor = (v_Color * texture2D(u_Texture, v_TexCoordinate));
 }

@@ -30,19 +30,19 @@ public class PrintTextObject {
 		// 특정 문자를 구별하고 지연시간을 설정함
 		switch (myText.charAt(text_INDEX)) {
 		case ' ':
-			stopTIME = 0.5f;
+			stopTIME = 0.25f;
 			break;
 		case '\n':
-			stopTIME = 1f;
-			STOP = true;
+			stopTIME = 0.5f;
+//			STOP = true;
 			break;
 		case '!':
 		case '?':
 		case '.':
-			stopTIME = 0.5f;
+			stopTIME = 0.25f;
 			break;
 		default:
-			stopTIME = 0.2f;
+			stopTIME = 0.1f;
 			break;
 		}
 		// 현재 상태와 시간을 비교하여 상태를 업데이트함
@@ -76,8 +76,8 @@ public class PrintTextObject {
 
 		cY = y;
 		for(int i=0;i<Text.length;i++){
-			FM.draw(Text[i], x, cY, false, Color, 1.0f);
-			cY -= 40f;
+			FM.draw(Text[i], x, cY, false, Color, 1.5f);
+			cY -= 80f;
 		}
 	}
 }

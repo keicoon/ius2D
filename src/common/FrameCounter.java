@@ -6,6 +6,7 @@ package common;
 public class FrameCounter {
 
 	private int FrameCount;
+	private static int preFrameCount;
 	private long FrameTime;
 	private long mLastTime;
 
@@ -19,7 +20,7 @@ public class FrameCounter {
 		mLastTime = System.currentTimeMillis();
 	}
 	/* 시간을 측정하는 함수 < 프레임 간격을 ms단위로 반환한다 >*/
-	public long Count() {
+	public float Count() {
 		long now = System.currentTimeMillis();
 		long elapsed = now - mLastTime;
 
@@ -27,15 +28,16 @@ public class FrameCounter {
 
 		if (FrameTime > 1000L) {
 			FrameTime = 0L;
+			preFrameCount = FrameCount;
 			FrameCount = 0;
 		} else
 			FrameCount++;
 
 		mLastTime = now;
-		return elapsed;
+		return (float)elapsed*0.001f;
 	}
 	/* 현재 프레임을 반환하는 함수 */
-	public int getFrameCount() {
-		return FrameCount;
+	public static int getFrameCount() {
+		return preFrameCount;
 	}
 }

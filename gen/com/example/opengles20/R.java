@@ -22,12 +22,7 @@ public final class R {
         public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int brick0=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int spr_bg_fantasy=0x7f020002;
-        public static final int spr_cheetahmen_1=0x7f020003;
-        public static final int spr_cheetahmen_2=0x7f020004;
-        public static final int spr_util=0x7f020005;
+        public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
         public static final int action_settings=0x7f090000;
@@ -41,18 +36,14 @@ public final class R {
     public static final class raw {
         public static final int bw_fragment_shader=0x7f040000;
         public static final int bw_vertex_shader=0x7f040001;
-        public static final int cheetahmen=0x7f040002;
-        public static final int font_fragment_shader=0x7f040003;
-        public static final int font_vertex_shader=0x7f040004;
-        public static final int menu_select=0x7f040005;
-        public static final int object_fragment_shader=0x7f040006;
-        public static final int object_vertex_shader=0x7f040007;
+        public static final int font_fragment_shader=0x7f040002;
+        public static final int font_vertex_shader=0x7f040003;
+        public static final int object_fragment_shader=0x7f040004;
+        public static final int object_vertex_shader=0x7f040005;
+        public static final int outline_font_fragment_shader=0x7f040006;
+        public static final int outline_font_vertex_shader=0x7f040007;
         public static final int point_fragment_shader=0x7f040008;
         public static final int point_vertex_shader=0x7f040009;
-        public static final int spr_bg_fantasy=0x7f04000a;
-        public static final int spr_cheetahmen_1=0x7f04000b;
-        public static final int spr_cheetahmen_2=0x7f04000c;
-        public static final int spr_util=0x7f04000d;
     }
     public static final class string {
         public static final int action_settings=0x7f060002;

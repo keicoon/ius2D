@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.example.opengles20.ButtonObject;
 import com.example.opengles20.GameObject;
@@ -28,15 +29,17 @@ public class InputManager {
 	GameObject handle,handle2;
 	
 	public boolean UP,DOWN,LEFT,RIGHT,A,B;
+	private boolean usingInputManager;
 	private int mtouchID;
 	private boolean useingTouchPad;
 	
 	public InputManager() {
 		UP=false;DOWN=false;LEFT=false;RIGHT=false;
-		A=false;B=false;mtouchID = -1;
+		A=false;B=false;mtouchID = -1;usingInputManager = false;
 		ButtonList = new ArrayList<ButtonObject>();
 	}
 	public void SetInput(Context context, myGLSurfaceView gl20,boolean puseingTouchPad){
+		usingInputManager = true;
 		useingTouchPad = puseingTouchPad;
 		mContext = context;
 		mGL20 = gl20;
@@ -47,24 +50,24 @@ public class InputManager {
 			handle.SetGameObject(mContext, mGL20,
 					"spr_util", 0, 1,
 					150f, 150f,
-					0f, 1.0f);
+					0f, 1.2f);
 			handle.alpha = 0.8f;
 			handle2 = new GameObject();
 			handle2.SetGameObject(mContext, mGL20,
 					"spr_util", 0, 2,
 					150f, 150f,
-					0f, 1.0f);
-			handle2.alpha = 0.8f;
+					0f, 1.2f);
+			handle2.alpha = 0.6f;
 			setButtonObject("spr_util", 0, 1,
 					myGLRenderer.mScreenWidth-240f, 100f,
-					0f, 1f,
+					0f, 1.2f,
 					0, "A",
 					0x00FF0000,
 					2f);
 			
 			setButtonObject("spr_util", 0, 1,
 					myGLRenderer.mScreenWidth-100f, 180f,
-					0f, 1f,
+					0f, 1.2f,
 					1, "B",
 					0x00FF0000,
 					2f);
@@ -84,12 +87,10 @@ public class InputManager {
 	}
 	/* 매 씬이 끝날때마다 버튼들을 삭제해서 관리해야함 <차후 수정이 필요한 부분> */
 	public void deleteButtonObject(){
-		int index=0;
-		if(useingTouchPad)
-			index = 2;
-		
-		for(int i=index;i<ButtonList.size();i++)
-			ButtonList.remove(i--);
+		Log.d("input","버튼이 삭제됨");
+		handle = null;handle2 = null;
+		ButtonList.clear();
+		usingInputManager = false;
 	}
 	/* 버튼을 실질적으로 그리는 부분으로 씬에서 한번만 Draw()를 하면 됨 */
 	public void draw(){
@@ -111,54 +112,56 @@ public class InputManager {
 	/* 터치가 눌렸는지 확인하는 함수로 호출만 하면 됨 <내부적으로 사용하는 함수이므로 사용자는 쓰지않음> */
 	public void updateStatus(int itype, boolean type, float x, float y, int touchID){
 		// TouchPad Logic 시작
-		if(useingTouchPad)
-		{
-			// AB버튼 Logic
-			ButtonObject tmp = ButtonList.get(0);
-			tmp.OnEvent(type, x, y);
-			A = tmp.active;
-			//ButtonList.get(1).OnEvent(type, x, y);
-			tmp = ButtonList.get(1);
-			tmp.OnEvent(type, x, y);
-			B = tmp.active;
+		if(usingInputManager){
+			if(useingTouchPad)
+			{
+				// AB버튼 Logic
+				ButtonObject tmp = ButtonList.get(0);
+				tmp.OnEvent(type, x, y);
+				A = tmp.active;
+				//ButtonList.get(1).OnEvent(type, x, y);
+				tmp = ButtonList.get(1);
+				tmp.OnEvent(type, x, y);
+				B = tmp.active;
+				
+				if(mtouchID == -1 && Util.CircleCrashObject2Point(handle2, 0f, new ius_Point(x,y))){
+					// 버튼에 터치가 입력된 경우 (버튼을 잡음)
+					mtouchID = touchID;
+				}
+				if(itype == 2 && mtouchID==touchID){
+					// 방향버튼의 손을 똇을 때 동작하는 부분으로 초기화함
+					mtouchID = -1;	
+					handle2.x = handle.x;
+					handle2.y = handle.y;
+					LEFT=false;RIGHT=false;UP=false;DOWN=false;
+				}
+				else if(type && mtouchID==touchID){
+					if(Util.CircleCrashObject2Point(handle, 0f, new ius_Point(x,y))){
+						//버튼이 최대 버튼안에 속한 경우
+						handle2.x = x;
+						handle2.y = y;
+					}
+					else{
+						//버튼이 외각으로 벗어난 경우
+						float L = (float) Math.sqrt(Util.Multyply(handle.x - x) + Util.Multyply(handle.y - y));
+						float K = 100f;
+						handle2.x = K/L*(x-handle.x) + handle.x;
+						handle2.y = K/L*(y-handle.y) + handle.y;
+					}
+					final float Index = 10f;
+					LEFT = false;RIGHT=false;UP=false;DOWN=false;
+					if(handle2.x<handle.x-Index)LEFT= true;
+					if(handle2.x>handle.x+Index)RIGHT= true;
+					if(handle2.y<handle.y-Index)DOWN= true;
+					if(handle2.y>handle.y+Index)UP= true;
+				}
+			}
 			
-			if(mtouchID == -1 && Util.CircleCrashObject2Point(handle2, 0f, new ius_Point(x,y))){
-				// 버튼에 터치가 입력된 경우 (버튼을 잡음)
-				mtouchID = touchID;
+			for(int i=2;i<ButtonList.size();i++)
+			{
+				ButtonObject tmp = ButtonList.get(i);
+				tmp.OnEvent(type, x, y);
 			}
-			if(itype == 2 && mtouchID==touchID){
-				// 방향버튼의 손을 똇을 때 동작하는 부분으로 초기화함
-				mtouchID = -1;	
-				handle2.x = handle.x;
-				handle2.y = handle.y;
-				LEFT=false;RIGHT=false;UP=false;DOWN=false;
-			}
-			else if(type && mtouchID==touchID){
-				if(Util.CircleCrashObject2Point(handle, 0f, new ius_Point(x,y))){
-					//버튼이 최대 버튼안에 속한 경우
-					handle2.x = x;
-					handle2.y = y;
-				}
-				else{
-					//버튼이 외각으로 벗어난 경우
-					float L = (float) Math.sqrt(Util.Multyply(handle.x - x) + Util.Multyply(handle.y - y));
-					float K = 100f;
-					handle2.x = K/L*(x-handle.x) + handle.x;
-					handle2.y = K/L*(y-handle.y) + handle.y;
-				}
-				final float Index = 10f;
-				LEFT = false;RIGHT=false;UP=false;DOWN=false;
-				if(handle2.x<handle.x-Index)LEFT= true;
-				if(handle2.x>handle.x+Index)RIGHT= true;
-				if(handle2.y<handle.y-Index)DOWN= true;
-				if(handle2.y>handle.y+Index)UP= true;
-			}
-		}
-		
-		for(int i=2;i<ButtonList.size();i++)
-		{
-			ButtonObject tmp = ButtonList.get(i);
-			tmp.OnEvent(type, x, y);
 		}
 	}
 	/* 버튼의 상태를 초기화함 */

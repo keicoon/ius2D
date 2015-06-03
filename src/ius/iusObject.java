@@ -18,14 +18,15 @@ public abstract class iusObject {
 	public float angle;
 	public float scale;
 	public float alpha;
-
+	public boolean fleep;
+	
 	private final ShortBuffer drawListBuffer;	// IndexBuffer는 고정이므로 변수로 생성함
 	private final FloatBuffer mNormals;			// 법선Buffer는 고정이므로 변수로 생성함
 
 	private int mPositionHandle;				// 위치 핸들
 	private int mColorHandle;					// 색상 핸들
 	private int mNormalHandle;					// 법선 핸들
-	private int mLightPosHandle;				// 광원 핸들
+	//private int mLightPosHandle;				// 광원 핸들
 	private int mTextureUniformHandle;			// 텍스쳐 핸들
 	private int mTextureCoordinateHandle;		// 텍스쳐 좌표 핸들
 	public int mTextureDataHandle;				// 텍스쳐 핸들
@@ -34,7 +35,7 @@ public abstract class iusObject {
 	public int mType;
 	
 	private int mMVPMatrixHandle;				// model + view + projection
-	private int mMVMatrixHandle;				// model + view
+	//private int mMVMatrixHandle;				// model + view
 	
 	private float[] mModelMatrix = new float[16];	// 모델 
 	private float[] mMVPMatrix = new float[16];		// MVP
@@ -47,7 +48,7 @@ public abstract class iusObject {
 	private final short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw
 					
 	protected iusObject(int mProgramHandle){
-		x = 0f; y = 0f; angle = 0f; scale = 1f; alpha = 1f;
+		x = 0f; y = 0f; angle = 0f; scale = 1f; alpha = 1f; fleep = false;
 		
 		drawListBuffer = ByteBuffer.allocateDirect(drawOrder.length * 2)
 				.order(ByteOrder.nativeOrder()).asShortBuffer();
@@ -64,8 +65,8 @@ public abstract class iusObject {
 	    mColorHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Color"); 
 	    mTextureCoordinateHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_TexCoordinate");
 	    // 우선순위 2
-	    mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVMatrix"); 
-	    mLightPosHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_LightPos");
+	    //mMVMatrixHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_MVMatrix"); 
+	    //mLightPosHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_LightPos");
 	    mNormalHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Normal");
 	    mFontTypeHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Type");
 	}
@@ -81,11 +82,17 @@ public abstract class iusObject {
 				nW+type*nW , -nH+type*nH, 0.0f, // bottom right
 				nW+type*nW , nH+type*nH , 0.0f }; // top right
 	// texture coordinate 정보
-	float[] TextureCoordinateData = new float[]{ 
+	float[] TextureCoordinateData;
+	if(!fleep)TextureCoordinateData = new float[]{ 
 				l, t,
 				l, b, 
 				r, b,
 				r, t };
+	else 		TextureCoordinateData = new float[]{ 
+				r, t,
+				r, b, 
+				l, b,
+				l, t };
 	// color 정보
 	float[] ColorData = { 
 			CR, CG, CB, alpha,			
@@ -134,12 +141,12 @@ public abstract class iusObject {
 	Matrix.scaleM(mModelMatrix, 0, scale , scale, 1.0f);   
    	
    	Matrix.multiplyMM(mMVPMatrix, 0, mViewMatrix, 0, mModelMatrix, 0);
-   	GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVPMatrix, 0);
+   	//GLES20.glUniformMatrix4fv(mMVMatrixHandle, 1, false, mMVPMatrix, 0);
    	
    	Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mMVPMatrix, 0);
    	GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
     
-   	GLES20.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
+   	//GLES20.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
     
 	GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
 			GLES20.GL_UNSIGNED_SHORT, drawListBuffer);

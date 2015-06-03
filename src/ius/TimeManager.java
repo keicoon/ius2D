@@ -50,6 +50,11 @@ public class TimeManager {
 	public void AddTimer(String timerName, float time){
 		AddTimer(timerName, time, false);
 	}
+	public Time AddTimer(float time, boolean option){
+		Time temp_time = new Time(time, option);
+		TimeArray.add(temp_time);
+		return temp_time;
+	}
 	public void AddTimer(String timerName, float time, boolean option){
 		TimeIndexMap.put(timerName, TimeArray.size());
 		TimeArray.add(new Time(time, option));
@@ -64,5 +69,9 @@ public class TimeManager {
 			tmp.OptionReset();
 			tmp.Add(delta);
 		}
+	}
+	public void ClearTime(){
+		TimeIndexMap.clear();
+		TimeArray.clear(); 
 	}
 }

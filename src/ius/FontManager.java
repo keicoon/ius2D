@@ -101,7 +101,7 @@ public class FontManager {
 			textPaint.getTextWidths(s, 0, 1, w);
 			//if(w[0] < 5f)w[0] = 5f;//5f is default size
 			charWidths[cnt] = w[0];
-			//Log.d("FONT","c:"+s[0]+"/w:"+charWidths[cnt]);
+			//Log.d("font","c:"+s[0]+"/w:"+charWidths[cnt]);
 			if(charWidths[cnt] > charWidthMax) charWidthMax = charWidths[cnt];
 			++cnt;
 		}
@@ -113,8 +113,8 @@ public class FontManager {
 		
 		
 		charHeight = fontHeight;
-		int maxSize = (int)(charWidthMax > charHeight ? charWidthMax : charHeight); Log.d("FONT","maxSize :"+maxSize);
-		textureSize = KOREAN_LINE_LENGTH*maxSize; Log.d("FONT","bitmap SIZE :"+textureSize+"/"+textureSize);
+		int maxSize = (int)(charWidthMax > charHeight ? charWidthMax : charHeight); //Log.d("font","maxSize :"+maxSize);
+		textureSize = KOREAN_LINE_LENGTH*maxSize; Log.d("font","bitmap SIZE :"+textureSize+"/"+textureSize);
 		
 		Bitmap bitmap = Bitmap.createBitmap(textureSize, textureSize, Bitmap.Config.ARGB_4444);
 		Canvas canvas = new Canvas(bitmap);
@@ -169,8 +169,9 @@ public class FontManager {
 
 		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-		GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+		//TODO 최적화떄문에 수정함!
+		//GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+		//GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
 
 		GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 		bitmap.recycle();
@@ -257,7 +258,7 @@ public class FontManager {
 					nW, nH,
 					temp.left, temp.top, temp.right, temp.bottom,
 					fColor.R, fColor.G, fColor.B,
-					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, myGLRenderer.mLightPosInEyeSpace);
+					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, null);
 		}
 	}
 	/* RGBA에서 TYPE에 맞는 결과를 세팅하는 함수 */

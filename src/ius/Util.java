@@ -9,7 +9,7 @@ public class Util {
 	 * 원 충돌
 	 * 1. 충돌 여부 (ius_Circle, point)
 	 */
-	static boolean RectCrashObject2Object_A(GameObject B, float bIndex, GameObject T, float tIndex){
+	public static boolean RectCrashObject2Object_A(GameObject B, float bIndex, GameObject T, float tIndex){
 		ius_Rect BasicRect = B.Get_Rect();
 		ius_Rect TargetRect = T.Get_Rect();
 		
@@ -21,34 +21,36 @@ public class Util {
 		
 		return false;
 	}
-	static ius_Rect RectCrashObject2Object_B(GameObject B, float bIndex, GameObject T, float tIndex){
-		
-		//boolean bVertical = false;
-		//boolean bHorizontal = false;
+	public static ius_Rect RectCrashObject2Object_B(GameObject B, float bWIndex,float bHIndex,
+													GameObject T, float tWIndex, float tHIndex){
+		boolean bVertical = false;
+		boolean bHorizontal = false;
 		
 		ius_Rect BasicRect = B.Get_Rect();
+		BasicRect.left += bWIndex; BasicRect.right -= bWIndex; BasicRect.bottom -= bHIndex; BasicRect.top += bHIndex;
 		ius_Rect TargetRect = T.Get_Rect();
+		TargetRect.left += tWIndex; TargetRect.right -= tWIndex; TargetRect.bottom -= tHIndex; TargetRect.top += tHIndex;
 		ius_Rect collisionRect = new ius_Rect(0f, 0f, 0f, 0f);
 		
 		//Horizontal crash
 		if(BasicRect.left < TargetRect.right && BasicRect.right > TargetRect.left){
-		//	bHorizontal = true;
+			bHorizontal = true;
 			collisionRect.left = (BasicRect.left > TargetRect.left) ? BasicRect.left : TargetRect.left;
 			collisionRect.right = (BasicRect.right < TargetRect.right) ? BasicRect.right : TargetRect.right;	
 		}
 		//Vertical crash
-		if(BasicRect.top < TargetRect.bottom && BasicRect.bottom > TargetRect.top){
-		//	bVertical = true;
+		if(BasicRect.top <= TargetRect.bottom && BasicRect.bottom > TargetRect.top){
+			bVertical = true;
 			collisionRect.top = (BasicRect.top > TargetRect.top) ? BasicRect.top :TargetRect.top;
 			collisionRect.bottom = (BasicRect.bottom < TargetRect.bottom) ? BasicRect.bottom : TargetRect.bottom;	
 		}
 		
-		//if(bVertical && bHorizontal)
-		return collisionRect;
-		//return null;
+		if(bVertical && bHorizontal)
+			return collisionRect;
+		return null;
 	}
 	
-	static boolean RectCrashObject2Point(GameObject B, float bIndex, ius_Point T){
+	public static boolean RectCrashObject2Point(GameObject B, float bIndex, ius_Point T){
 		ius_Rect BasicRect = B.Get_Rect();
 		
 		if( BasicRect.left + bIndex  <= T.x
@@ -60,7 +62,7 @@ public class Util {
 		return false;
 	}
 	
-	static boolean CircleCrashObject2Object_A(GameObject B, float bIndex, GameObject T, float tIndex){
+	public static boolean CircleCrashObject2Object_A(GameObject B, float bIndex, GameObject T, float tIndex){
 		ius_Circle BasicCircle = new ius_Circle(B.Get_Rect());
 		ius_Circle TargetCircle = new ius_Circle(B.Get_Rect());
 		
@@ -71,7 +73,7 @@ public class Util {
 		 
 		 return false;
 	}
-	static boolean CircleCrashObject2Point(GameObject B, float bIndex, ius_Point T){
+	public static boolean CircleCrashObject2Point(GameObject B, float bIndex, ius_Point T){
 		ius_Circle BasicCircle = new ius_Circle(B.Get_Rect());
 		
 		if(Multyply(T.x - BasicCircle.x)
@@ -90,8 +92,8 @@ public class Util {
 		}
 		public float getWidth(){return right - left;}
 		public float getHeight(){return bottom - top;}
-		public float getCenterX(){return left + getWidth()/2;}
-		public float getCenterY(){return top + getHeight()/2;}
+		public float getCenterX(){return left + getWidth()*0.5f;}
+		public float getCenterY(){return top + getHeight()*0.5f;}
 	}
 	public static class ius_Point{
 		public float x,y;
@@ -110,6 +112,22 @@ public class Util {
 			y = R.getCenterY();
 		}
 	}
+	public static class Vector3f {
+		public float x;
+		public float y;
+		public float z;
+		public int iZ;
+		public Vector3f(float px, float py, float pz) {
+			// TODO Auto-generated constructor stub
+			x= px; y = py; z = pz;
+		}
+		public Vector3f(float px, float py, int pz) {
+			// TODO Auto-generated constructor stub
+			x= px; y = py; iZ = pz;
+		}
+	}
+
+	@SuppressWarnings("unused")
 	private static float Multyply(float p, float t){
 		return (t - p) * (t - p);
 	}
@@ -120,10 +138,10 @@ public class Util {
 	public static class FFF{
 		public float A,R,G,B;
 		public FFF(int VALUE){
-			B = (VALUE>>0 & 0xff) / 255f;
-			G = (VALUE>>8 & 0xff) / 255f;
-			R = (VALUE>>16 & 0xff) / 255f;
-			A = (VALUE>>24 & 0xff) / 255f;
+			B = (VALUE>>0 & 0xff)  * 0.00392f; //0.00392 255
+			G = (VALUE>>8 & 0xff)  * 0.00392f;
+			R = (VALUE>>16 & 0xff) * 0.00392f;
+			A = (VALUE>>24 & 0xff) * 0.00392f;
 		}
 	}
 }

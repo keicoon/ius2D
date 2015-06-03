@@ -2,7 +2,7 @@ package com.example.opengles20;
 
 import android.content.Context;
 import android.graphics.RectF;
-import ius.Vector3f;
+import ius.Util;
 import ius.iusObject;
 /* ButtonObject Class
  * Function : 버튼오브젝트를 정의하는 클래스 < iusObject를 상속받음 >
@@ -42,7 +42,7 @@ public class ButtonObject extends iusObject {
 		Color = pColor;
 		id = pid;
 		
-		Vector3f v3f = GL20.atlasManager.loadTextureSize(spr_name, ani_num);
+		Util.Vector3f v3f = GL20.atlasManager.loadTextureSize(spr_name, ani_num);
 		mTextureDataHandle = GL20.atlasManager.loadBitmap(spr_name);
 		width = v3f.x;
 		height = v3f.y;
@@ -66,20 +66,20 @@ public class ButtonObject extends iusObject {
 	}
 	@Override
 	public void Draw() {
-		float nW = pos.width()/2*myGLRenderer.ssx, nH = pos.height()/2*myGLRenderer.ssy;
+		float nW = pos.width()*0.5f*myGLRenderer.ssx, nH = pos.height()*0.5f*myGLRenderer.ssy;
 		
 		if(active)	// 눌린 경우 색상을 초록색으로 출력
 			iusDraw(0f,
 					nW, nH, 
 					pos.left/width, pos.top/height, pos.right/width, pos.bottom/height, 
 					0.0f, 1.0f, 0.0f,
-					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, myGLRenderer.mLightPosInEyeSpace);
+					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, null);
 		else		// 눌리지 않은 경우 색상을 하얀색으로 출력
 			iusDraw(0f,
 					nW, nH, 
 					pos.left/width, pos.top/height, pos.right/width, pos.bottom/height, 
 					1.0f, 1.0f, 1.0f,
-					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, myGLRenderer.mLightPosInEyeSpace);
+					myGLRenderer.mViewMatrix, myGLRenderer.mProjectionMatrix, null);
 	}
 	public void DrawFont(){
 		GL20.fontManager.draw(
