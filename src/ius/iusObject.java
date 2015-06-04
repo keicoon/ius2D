@@ -20,6 +20,7 @@ public abstract class iusObject {
 	public float alpha;
 	public boolean fleep;
 	
+	public float textrueSize[] = {0.1f, 0.1f};
 	private final ShortBuffer drawListBuffer;	// IndexBuffer는 고정이므로 변수로 생성함
 	private final FloatBuffer mNormals;			// 법선Buffer는 고정이므로 변수로 생성함
 
@@ -30,9 +31,10 @@ public abstract class iusObject {
 	private int mTextureUniformHandle;			// 텍스쳐 핸들
 	private int mTextureCoordinateHandle;		// 텍스쳐 좌표 핸들
 	public int mTextureDataHandle;				// 텍스쳐 핸들
+	public int mTextureSizeHandle;				// 텍스쳐 핸들
 	
 	public int mFontTypeHandle;					// 폰트타입 핸들
-	public int mType;
+	public int mType;							// 폰트종류 데이터
 	
 	private int mMVPMatrixHandle;				// model + view + projection
 	//private int mMVMatrixHandle;				// model + view
@@ -69,6 +71,7 @@ public abstract class iusObject {
 	    //mLightPosHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_LightPos");
 	    mNormalHandle = GLES20.glGetAttribLocation(mProgramHandle, "a_Normal");
 	    mFontTypeHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_Type");
+	    mTextureSizeHandle = GLES20.glGetUniformLocation(mProgramHandle, "u_gPixelOffset");
 	}
 	public void iusDraw(float type,
 			float nW, float nH,
@@ -115,6 +118,7 @@ public abstract class iusObject {
 	GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
 	GLES20.glUniform1i(mTextureUniformHandle, 0);
 	GLES20.glUniform1i(mFontTypeHandle, mType);
+	GLES20.glUniform2fv(mTextureSizeHandle, 1, textrueSize, 0);
 	
 	// Buffer에 정보 넣음
 	GLES20.glVertexAttribPointer(mPositionHandle, 3,

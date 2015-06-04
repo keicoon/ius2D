@@ -64,8 +64,8 @@ public class SceneLOADING extends Scene{
 		case 3:
 			if(doFadeOut(INTERVAL, 0.3f))
 				//TODO change nextScene
-				mGL20.ChangeScene(this, new SceneTITLE(mContext, mGL20));
-				//mGL20.ChangeScene(this, new SceneINGAME(mContext, mGL20));
+				//mGL20.ChangeScene(this, new SceneTITLE(mContext, mGL20));
+				mGL20.ChangeScene(this, new SceneINGAME(mContext, mGL20));
 			break;
 		}
 	}

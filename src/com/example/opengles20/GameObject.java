@@ -31,7 +31,7 @@ public class GameObject extends iusObject{
 	public boolean bJump;
 	
 	public GameObject(){
-		super(myGLRenderer.mObjectProgramHandle);
+		super(myGLRenderer.mOutlineObjectProgramHandle);
 	}
 	public void SetGameObject(
 			Context mContext, myGLSurfaceView mGL20,
@@ -53,6 +53,7 @@ public class GameObject extends iusObject{
 		Util.Vector3f v3f = GL20.atlasManager.loadTextureSize(spr_name, ani_num);
 		mTextureDataHandle = GL20.atlasManager.loadBitmap(spr_name);
 		width = v3f.x; height = v3f.y; spr_total_num = v3f.iZ;
+		textrueSize[0] = 1/width; textrueSize[1] = 1/height;
 	}
 	/* 현재 Sprite의 Texture 크기로 출력함 */
 	public void Draw(){

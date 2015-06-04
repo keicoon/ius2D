@@ -52,7 +52,7 @@ public abstract class Scene {
 	/*셰이더를 적용하는 함수 */
 	public void setShader(int shader){
 		if(shader == 0)
-			currentShader = myGLRenderer.mObjectProgramHandle;
+			currentShader = myGLRenderer.mOutlineObjectProgramHandle;
 		else
 			currentShader = shader;
 	}

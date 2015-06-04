@@ -33,6 +33,7 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
 	public static int mFontProgramHandle;			// Font Shader Handle
 	public static int mBWObjectProgramHandle;		// black&white Shader Handle
 	public static int mOutlineObjectProgramHandle;	// outline Shader Handle
+	
 	// 게임 화면 크기
 	// 일반적인 화면 resolution은 1280x720 임
     public static float   mScreenWidth = 1280f;
@@ -90,12 +91,12 @@ public class myGLRenderer implements GLSurfaceView.Renderer {
         mBWObjectProgramHandle = ShaderHelper.createAndLinkProgram(bwVertexShaderHandle, bwFragmentShaderHandle, 
         		new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
         
-        //final String outlineVertexShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_vertex_shader);        	       
-        //final String outlineFragmentShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_fragment_shader);    
-		//final int outlineVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, outlineVertexShader);
-		//final int outlineFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, outlineFragmentShader);
-        //mOutlineObjectProgramHandle = ShaderHelper.createAndLinkProgram(outlineVertexShaderHandle, outlineFragmentShaderHandle, 
-        //		new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
+        final String outlineVertexShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_vertex_shader);        	       
+        final String outlineFragmentShader = RawResourceReader.readTextFileFromRawResource(mContext, R.raw.outline_font_fragment_shader);    
+		final int outlineVertexShaderHandle = ShaderHelper.compileShader(GLES20.GL_VERTEX_SHADER, outlineVertexShader);
+		final int outlineFragmentShaderHandle = ShaderHelper.compileShader(GLES20.GL_FRAGMENT_SHADER, outlineFragmentShader);
+        mOutlineObjectProgramHandle = ShaderHelper.createAndLinkProgram(outlineVertexShaderHandle, outlineFragmentShaderHandle, 
+        		new String[] {"a_Position", "a_Color", "a_TexCoordinate"});
         
         
         //Initialize GLES20

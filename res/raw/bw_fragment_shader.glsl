@@ -12,8 +12,8 @@ void main()
 {
 	vec4 normalColor = texture2D(u_Texture, v_TexCoordinate);
 	//black&white
-	//float gray = 0.299*normalColor.r + 0.587*normalColor.g + 0.114*normalColor.b;
-    //gl_FragColor = vec4(gray, gray, gray, normalColor.a); 
+	float gray = 0.299*normalColor.r + 0.587*normalColor.g + 0.114*normalColor.b;
+    gl_FragColor = vec4(gray, gray, gray, normalColor.a); 
     
     //shepia
     //gl_FragColor = vec4(0.393*normalColor.r + 0.769*normalColor.g + 0.189*normalColor.b,
@@ -22,5 +22,5 @@ void main()
     //					normalColor.a);
     
     //default
-    gl_FragColor = (v_Color * texture2D(u_Texture, v_TexCoordinate));
+    //gl_FragColor = (v_Color * texture2D(u_Texture, v_TexCoordinate));
 }

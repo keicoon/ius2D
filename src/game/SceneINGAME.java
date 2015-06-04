@@ -248,11 +248,13 @@ public class SceneINGAME extends Scene{
 			if(!tmp_monster.bDeath && Util.RectCrashObject2Object_A(tmp_monster, 0f, player, 0f)){
 				//TODO 라이프 감소
 				
-				if(LIFE<=0)
-					// 게임 종료
-					DeadTrag();
-				else
-					LIFE -= 20;
+				if(!player.bDeath){
+					if(LIFE<=0)
+						// 게임 종료
+						DeadTrag();
+					else
+						LIFE -= 20;
+				}
 				tmp_monster.bDeath = true;
 			}
 			// move monster

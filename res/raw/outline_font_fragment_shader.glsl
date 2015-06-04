@@ -1,36 +1,33 @@
-precision mediump float;        // Set the default precision to medium. We don't need as high of a
-                                // precision in the fragment shader.
+precision mediump float;        // 정밀도 표현
 
 uniform sampler2D u_Texture;    // The input texture.
-uniform vec2 Offset;
-varying vec4 v_Color;           // This is the color from the vertex shader interpolated across the
-                                // triangle per fragment.
+uniform vec2 u_gPixelOffset;
 
-varying vec2 v_TexCoordinate;   // Interpolated texture coordinate per fragment.
+varying vec4 v_Color;           // vertex로부터 넘겨받음
+varying vec2 v_TexCoordinate;   // vertex로부터 넘겨받음
  
-// The entry point for our fragment shader.
 void main()
 {
-    // Multiply the color by the diffuse illumination level and texture value to get final output color.
-    
-	vec2 TexCoord = v_TexCoordinate.st;
-	//vec2 Offset = 1.0 / textureSize2D(u_Texture, 0);
+	mat3 K = mat3(
+			1.0, 1.0, 1.0,
+			1.0 ,0.0, 1.0,
+			1.0, 1.0, 1.0
+			);
+	float L = 0.0;
+	vec4 M = texture2D(u_Texture, v_TexCoordinate);
 	
-	vec4 n = texture2D(u_Texture, vec2(TexCoord.x, TexCoord.y - Offset.y));
-	vec4 e = texture2D(u_Texture, vec2(TexCoord.x + Offset.x, TexCoord.y));
-	vec4 s = texture2D(u_Texture, vec2(TexCoord.x, TexCoord.y + Offset.y));
-	vec4 w = texture2D(u_Texture, vec2(TexCoord.x - Offset.x, TexCoord.y));
+	for (int y = -1; y<=1; ++y)
+   	{
+	   	for(int x = -1; x<=1; ++x)
+	   	{
+	   		vec2 offset = vec2(v_TexCoordinate.x + float(x)*u_gPixelOffset.x, v_TexCoordinate.y + float(y)*u_gPixelOffset.y);
+	   		vec4 pixel = texture2D(u_Texture, offset);
 
-	vec4 TexColor = texture2D(u_Texture, TexCoord);
-	float GrowedAlpha = TexColor.a;
-	GrowedAlpha = mix(GrowedAlpha, 1.0, s.a);
-	GrowedAlpha = mix(GrowedAlpha, 1.0, w.a);
-	GrowedAlpha = mix(GrowedAlpha, 1.0, n.a);
-	GrowedAlpha = mix(GrowedAlpha, 1.0, e.a);
-
-	vec4 OutlineColorWithNewAlpha = vec4(1.0, 1.0, 0.0, 1.0);
-	OutlineColorWithNewAlpha.a = GrowedAlpha;
-	vec4 CharColor = TexColor * v_Color;
-
-	gl_FragColor = mix(OutlineColorWithNewAlpha, CharColor, CharColor.a);
+	   		L += pixel.a * K[y+1][x+1];
+	   	}
+  	}
+	if(M.a == 0.0 && L > 1.0)
+		gl_FragColor = vec4(0.812, 0.075, 0.224, 1.0); 
+	else
+		gl_FragColor = M;
 }
