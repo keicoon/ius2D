@@ -43,7 +43,15 @@ public class TimeManager {
 			if(option) currentTime = 0f;
 		}
 	}
-	public TimeManager(){
+	private static TimeManager instance;
+
+	public static TimeManager getInstance() {
+		if (instance == null) {
+			instance = new TimeManager();
+		}
+		return instance;
+	}
+	private TimeManager(){
 		TimeIndexMap = new HashMap<String, Integer>();
 		TimeArray = new ArrayList<Time>();
 	}

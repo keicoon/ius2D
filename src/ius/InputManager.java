@@ -5,14 +5,11 @@ import ius.Util.ius_Point;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.example.opengles20.ButtonObject;
-import com.example.opengles20.GameObject;
 import com.example.opengles20.myGLRenderer;
-import com.example.opengles20.myGLSurfaceView;
 
 @SuppressLint("RtlHardcoded")
 
@@ -22,9 +19,6 @@ import com.example.opengles20.myGLSurfaceView;
  */
 public class InputManager {
 
-	Context mContext;
-	myGLSurfaceView mGL20;
-	
 	ArrayList<ButtonObject> ButtonList;
 	GameObject handle,handle2;
 	
@@ -33,27 +27,33 @@ public class InputManager {
 	private int mtouchID;
 	private boolean useingTouchPad;
 	
-	public InputManager() {
+	private static InputManager instance;
+
+	public static InputManager getInstance() {
+		if (instance == null) {
+			instance = new InputManager();
+		}
+		return instance;
+	}
+	private InputManager() {
 		UP=false;DOWN=false;LEFT=false;RIGHT=false;
 		A=false;B=false;mtouchID = -1;usingInputManager = false;
 		ButtonList = new ArrayList<ButtonObject>();
 	}
-	public void SetInput(Context context, myGLSurfaceView gl20,boolean puseingTouchPad){
+	public void SetInput(boolean puseingTouchPad){
 		usingInputManager = true;
 		useingTouchPad = puseingTouchPad;
-		mContext = context;
-		mGL20 = gl20;
-		
+
 		if(useingTouchPad)// 터치패드를 사용한다면 수행되어야하는 부분 1 <특징 : 고정된 위치에 버튼을 생성함>
 		{
 			handle = new GameObject();
-			handle.SetGameObject(mContext, mGL20,
+			handle.SetGameObject(
 					"spr_util", 0, 1,
 					150f, 150f,
 					0f, 1.2f);
 			handle.alpha = 0.8f;
 			handle2 = new GameObject();
-			handle2.SetGameObject(mContext, mGL20,
+			handle2.SetGameObject(
 					"spr_util", 0, 2,
 					150f, 150f,
 					0f, 1.2f);
@@ -79,7 +79,7 @@ public class InputManager {
 			float pangle, float pscale,
 			int pid, String ptext, int pColor, float pfscale){
 		ButtonList.add(
-				new ButtonObject(mContext, mGL20,
+				new ButtonObject(
 						textureName, p_AN, p_SN,
 						px, py,
 						pangle, pscale,

@@ -1,6 +1,5 @@
 package ius;
 
-import com.example.opengles20.GameObject;
 
 public class Util {
 	/* 사각 충돌

@@ -1,5 +1,6 @@
 package common;
 
+
 /* FrameCounter Class
  * Function : 프레임을 측정하고 프레임 간격을 얻음
  */
@@ -31,7 +32,7 @@ public class FrameCounter {
 			preFrameCount = FrameCount;
 			FrameCount = 0;
 		} else
-			FrameCount++;
+			++FrameCount;
 
 		mLastTime = now;
 		return (float)elapsed*0.001f;

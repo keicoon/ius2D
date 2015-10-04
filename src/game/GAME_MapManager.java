@@ -2,11 +2,11 @@ package game;
 
 import java.util.ArrayList;
 
+import ius.GameObject;
+import ius.ObjectManager;
 import ius.Util;
 import ius.Util.ius_Rect;
-import android.content.Context;
 
-import com.example.opengles20.GameObject;
 import com.example.opengles20.myGLSurfaceView;
 /* GAME_MapManager Class
  * Function : '치타맨'게임의 맵 관련 기능을 수행하는 클래스
@@ -21,10 +21,10 @@ public class GAME_MapManager {
 
 	float	mapTile_startXP;
 	int 	current_left_bound;
+	ObjectManager OM;
 	
 	// 외부 변수
 	ArrayList<GameObject>	mMonster;
-	Context 				mContext;
 	myGLSurfaceView			mGL20;
 	/* mapTile 종류
 	 * -1 -> default (sky)
@@ -35,13 +35,13 @@ public class GAME_MapManager {
 	 * 마지막 INDEX는 몬스터 정보임
 	 * */
 	int[][] stage1_tile= {
-			{-1,-1,6,7,10,10	,0},
+			{6,7,7,7,10,10		,0},
 			{-1,-1,-1,8,10,10	,2},
-			{-1,-1,6,7,10,10	,5},
+			{6,7,7,7,10,10		,5},
 			{-1,-1,-1,8,10,10	,4},
-			{-1,-1,6,7,10,10	,0},
+			{6,7,7,7,10,10		,0},
 			{-1,-1,-1,8,10,10	,4},
-			{-1,-1,6,7,10,10	,0},
+			{-1,6,7,7,10,10		,0},
 			{-1,-1,-1,8,10,10	,5},
 			{-1,-1,6,7,10,10	,0},
 			{-1,-1,-1,-1,10,10	,5},
@@ -87,18 +87,17 @@ public class GAME_MapManager {
 			{-1,-1,-1,-1,-1,-1	,0}};
 	
 	GameObject[][] mapTile;
-	public GAME_MapManager(Context pContext, myGLSurfaceView pGL20, ArrayList<GameObject> pMonster){
-		mContext = pContext;
+	public GAME_MapManager(myGLSurfaceView pGL20, ArrayList<GameObject> pMonster){
 		mGL20 = pGL20;
 		mMonster = pMonster;
+		OM = ObjectManager.getInstance();
 		// TODO 주의 < 2차원 배열 생성을 다시 확인해야함 >
 		mapTile = new GameObject[WIDTH][height];
 		mapTile_startXP = 0f;
 		current_left_bound = 0;
 		for(int i=0;i<WIDTH;i++)
 			for(int j=0;j<height;j++){
-				mapTile[i][j] = mGL20.objectmanager.newItem(
-						mContext, mGL20,
+				mapTile[i][j] = OM.newItem(
 						"spr_map_object", 0, 0,
 						40f+80f*i, 30f+60f*(height-1-j),
 						0f, 1.0f);
@@ -134,30 +133,27 @@ public class GAME_MapManager {
 		switch(monsterN)
 		{
 			case 2:// 해골
-				GameObject tmp_monster = mGL20.objectmanager.newItem(
-						mContext, mGL20,
+				GameObject tmp_monster = OM.newItem(
 						"spr_cheetahmen_1", 2, 0,
-						1300f, 195f,
+						1150f, 195f,
 						0f, 3.0f);
 				tmp_monster.fSpeed = -100f;
 				tmp_monster.bDeath = false;
 				mMonster.add(tmp_monster);
 				break;
 			case 4:// 새
-				tmp_monster = mGL20.objectmanager.newItem(
-						mContext, mGL20,
+				tmp_monster = OM.newItem(
 						"spr_cheetahmen_1", 4, 0,
-						1300f, 310f,
+						1150f, 320f,
 						0f, 3.0f);
 				tmp_monster.fSpeed = -200f;
 				tmp_monster.bDeath = false;
 				mMonster.add(tmp_monster);
 				break;
 			case 5:// 강아지
-				tmp_monster = mGL20.objectmanager.newItem(
-						mContext, mGL20,
+				tmp_monster = OM.newItem(
 						"spr_cheetahmen_1", 5, 0,
-						1300f, 155f,
+						1150f, 155f,
 						0f, 3.0f);
 				tmp_monster.fSpeed = -150f;
 				tmp_monster.bDeath = false;

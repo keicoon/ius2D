@@ -1,14 +1,8 @@
 package com.example.opengles20;
 
 import game.SceneLOADING;
-import ius.AtlasManager;
-import ius.CameraManager;
-import ius.FontManager;
-import ius.ObjectManager;
 import ius.Scene;
 import ius.SoundManager;
-import ius.TimeManager;
-import ius.InputManager;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
@@ -22,14 +16,7 @@ public class myGLSurfaceView extends GLSurfaceView{
 	private final myGLRenderer mRenderer;
 	private Scene currentScene;
 	// engine에서 사용하는 Manager 변수
-	public ObjectManager objectmanager;
-	public final AtlasManager atlasManager;
-	public FontManager fontManager;
-	public TimeManager timeManager;
-	public InputManager inputManager;
-	public SoundManager soundManager;
-	public CameraManager cameraManager;
-	
+
 	public myGLSurfaceView(Context context) {
 		
 		super(context);
@@ -37,23 +24,11 @@ public class myGLSurfaceView extends GLSurfaceView{
 		//this option is call one time and need to write 'draw call'
 		//setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 		
-		//Initialize managers
-		objectmanager = new ObjectManager();
-		atlasManager = new AtlasManager();
-		fontManager = new FontManager("font/Roboto-Regular.ttf", context);//Roboto-Regular whitecat
-		timeManager = new TimeManager();
-		inputManager = new InputManager();
-		soundManager = new SoundManager(context);
-		
 		//start first Scene
-		currentScene = new SceneLOADING(context, this);
+		currentScene = new SceneLOADING(this);
 		
 		//set renderer
-		mRenderer = new myGLRenderer(context, this);
-		mRenderer.SetCurrentScene(currentScene);
-		
-		//set cameraManager
-		cameraManager = new CameraManager();
+		mRenderer = new myGLRenderer(context, currentScene);
 	}
 	public boolean RenderStart(boolean isLevel2)
 	{
@@ -72,27 +47,27 @@ public class myGLSurfaceView extends GLSurfaceView{
 	}
 	public void ChangeScene(Scene current, Scene next){
 		current.Destroy();
-		next.Init();
-		
 		current = null;
+		
 		currentScene = next;
-		mRenderer.SetCurrentScene(next);
+		mRenderer.SetCurrentScene(currentScene);
+		currentScene.Init();
 	}
 	
 	public void onResume(){
 		super.onResume();
-		soundManager.PauseBGMSound(true);
+		SoundManager.getInstance().PauseBGMSound(true);
 	}
 	public void onPause() {
 		super.onPause();
-		soundManager.PauseBGMSound(false);
+		SoundManager.getInstance().PauseBGMSound(false);
 	};
 	@SuppressLint("ClickableViewAccessibility")
 	public boolean onTouchEvent(MotionEvent e) {
 	    // MotionEvent reports input details from the touch screen
 	    // and other input controls. In this case, you are only
 	    // interested in events where the touch position changed.
-		synchronized(currentScene.mGL20){
+		synchronized(this){
 		if(currentScene != null)
 			currentScene.onTouchEvent(e);
 		}

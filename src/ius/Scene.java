@@ -1,10 +1,8 @@
 package ius;
 
-import com.example.opengles20.GameObject;
 import com.example.opengles20.myGLRenderer;
 import com.example.opengles20.myGLSurfaceView;
 
-import android.content.Context;
 import android.graphics.PointF;
 import android.opengl.GLES20;
 import android.util.SparseArray;
@@ -14,8 +12,7 @@ import android.view.MotionEvent;
  * Function : 게임 씬의 기본 클래스로 가장 기본적인 씬의 형태임
  * 
  */
-public abstract class Scene {
-	protected Context mContext;				
+public abstract class Scene {			
 	public myGLSurfaceView mGL20;			
 	public boolean gameLoop = true;			// 현재 씬의 Logic을 동작하거나 중지하는 변수
 	private int currentShader;				// 현재 씬의 Shader를 저장하는 변수
@@ -26,19 +23,36 @@ public abstract class Scene {
 	protected float TOUCH_X, TOUCH_Y;		// 터치 좌표 X, Y를 저장하는 변수
 	public SparseArray<PointF> mActivePointers;
 	
+	protected InputManager IM;
+	protected TimeManager TM;
+	protected ObjectManager OM;
+	protected SoundManager SM;
+	protected FontManager FM;
+	protected AtlasManager AM;
+	
 	public abstract void Init();			// 씬의 초기화를 담당하는 상속 함수
-	public abstract void Destroy();			// 씬의 파괴(메모리정리)를 담당하는 상속 함수
+	public void Destroy(){			// 씬의 파괴(메모리정리)를 담당하는 상속 함수
+		/* Before Destroy, must call Manager's clearFuction */
+		TM.ClearTime();
+		IM.deleteButtonObject();
+		OM.ClearItem();
+	}
 	
 	protected abstract void Draw();			// 씬을 그리는 내용이 들어가는 함수
 	protected abstract void Update(float INTERVAL);//씬의 Logic 내용이 들어가는 함수
 	protected abstract void Input();		// 씬의 입력처리(터치) 내용이 들어가는 함수
 	
-	public Scene(Context context, myGLSurfaceView gl20){
-		mContext = context;
+	public Scene(myGLSurfaceView gl20){
 		mGL20 = gl20;
 		mActivePointers = new SparseArray<PointF>();
 		screenWidth = myGLRenderer.mScreenWidth;
 		screenHeight = myGLRenderer.mScreenHeight;
+		IM = InputManager.getInstance();
+		TM = TimeManager.getInstance();
+		OM = ObjectManager.getInstance();
+		SM = SoundManager.getInstance();
+		FM = FontManager.getInstance();
+		AM = AtlasManager.getInstance();
 	}
 	public void run(float elapsed)
 	{
@@ -52,7 +66,7 @@ public abstract class Scene {
 	/*셰이더를 적용하는 함수 */
 	public void setShader(int shader){
 		if(shader == 0)
-			currentShader = myGLRenderer.mOutlineObjectProgramHandle;
+			currentShader = myGLRenderer.mObjectProgramHandle;
 		else
 			currentShader = shader;
 	}
@@ -72,7 +86,7 @@ public abstract class Scene {
 			      f.y = (myGLRenderer.pScreenHeight-e.getY(pointerIndex))/myGLRenderer.ssy;
 			      mActivePointers.put(pointerId, f);
 			      // InputManager의 함수로 처리함 (터치패드와 버튼에 영향을 주는 부분)
-			      mGL20.inputManager.updateStatus(0, true, f.x, f.y, pointerId);
+			      IM.updateStatus(0, true, f.x, f.y, pointerId);
 			      // 터치처리를 위한 상속 함수
 			break;
 			case MotionEvent.ACTION_MOVE:
@@ -83,10 +97,10 @@ public abstract class Scene {
 					if (point != null
 							&& point.x != lx
 							&& point.y != ly) {
-						mGL20.inputManager.updateStatus(1,false, point.x, point.y, e.getPointerId(i));
+						IM.updateStatus(1,false, point.x, point.y, e.getPointerId(i));
 						point.x = lx;
 						point.y = ly;
-						mGL20.inputManager.updateStatus(1,true, point.x, point.y, e.getPointerId(i));
+						IM.updateStatus(1,true, point.x, point.y, e.getPointerId(i));
 					}
 				}
 				break;
@@ -95,7 +109,7 @@ public abstract class Scene {
 				PointF t = mActivePointers.get(pointerId);
 				/* TODO 에러 예외처리 */
 				if(t != null){
-					mGL20.inputManager.updateStatus(2,false, t.x, t.y, pointerId);
+					IM.updateStatus(2,false, t.x, t.y, pointerId);
 					mActivePointers.remove(pointerId);
 				}
 			break;
@@ -133,11 +147,11 @@ public abstract class Scene {
 				gQuakeValue *= -1.0f;	
 				
 				float camera_x = gQuakeSize * gQuakeValue, camera_y =  gQuakeSize * gQuakeValue;
-				mGL20.cameraManager.fixedCamera(camera_x, camera_y);
+				CameraManager.getInstance().fixedCamera(camera_x, camera_y);
 			}
 			if(gQuakeTime < 0f){
 				gQuakeState = false;
-				mGL20.cameraManager.fixedCamera(0f, 0f);
+				CameraManager.getInstance().fixedCamera(0f, 0f);
 			}
 		}
 	}
@@ -147,8 +161,7 @@ public abstract class Scene {
 	public void setFadeState(float FadeType){
 		gFadeState = true;
 		gFadeValue = FadeType;
-		BG_Black_Screen = mGL20.objectmanager.newItem(
-				mContext, mGL20,
+		BG_Black_Screen = OM.newItem(
 				//검은 배경 그림으로 변경해야함
 				"spr_util", 1, 0,
 				myGLRenderer.pScreenWidth*0.5f, myGLRenderer.pScreenHeight*0.5f,
@@ -158,14 +171,14 @@ public abstract class Scene {
 		if(gFadeState){
 			if(gFadeValue <= 0f){
 				//end 조건
-				mGL20.objectmanager.RemoveItem(BG_Black_Screen);
+				OM.RemoveItem(BG_Black_Screen);
 				return true;
 			}
 			else{
 				//process 조건
 				gFadeValue -= speed*deltaTime;
 				BG_Black_Screen.alpha = gFadeValue;
-				BG_Black_Screen.Draw(myGLRenderer.pScreenWidth, myGLRenderer.pScreenHeight);
+				BG_Black_Screen.Draw(myGLRenderer.pScreenWidth*1.5f, myGLRenderer.pScreenHeight*1.5f);
 			}
 		}
 		return false;
@@ -174,14 +187,14 @@ public abstract class Scene {
 		if(gFadeState){
 			if(gFadeValue >= 1f){
 				//end 조건
-				mGL20.objectmanager.RemoveItem(BG_Black_Screen);
+				OM.RemoveItem(BG_Black_Screen);
 				return true;
 			}
 			else{
 				//process 조건
 				gFadeValue += speed*deltaTime;
 				BG_Black_Screen.alpha = gFadeValue;
-				BG_Black_Screen.Draw(myGLRenderer.pScreenWidth, myGLRenderer.pScreenHeight);
+				BG_Black_Screen.Draw(myGLRenderer.pScreenWidth*1.5f, myGLRenderer.pScreenHeight*1.5f);
 			}
 		}
 		return false;

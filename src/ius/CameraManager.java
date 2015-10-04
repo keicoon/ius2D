@@ -12,7 +12,17 @@ public class CameraManager {
 	private float eyeX = 0.0f;
 	private float eyeY = 0.0f;
 
-	public CameraManager(){ }
+	private static CameraManager instance;
+
+	public static CameraManager getInstance() {
+		if (instance == null) {
+			instance = new CameraManager();
+		}
+		return instance;
+	}
+	private CameraManager(){ 
+		
+	}
 	/* 카메라 매트릭스를 Renderer Class에 설정하는 함수 */
 	private void setCamera(){
 		Matrix.setLookAtM(myGLRenderer.mViewMatrix, 0, eyeX, eyeY, 1.0f, eyeX, eyeY, 0f, 0f, 1.0f, 0.0f);

@@ -2,13 +2,11 @@ package game;
 
 import java.util.ArrayList;
 
-import android.content.Context;
-
-import com.example.opengles20.GameObject;
 import com.example.opengles20.myGLRenderer;
 import com.example.opengles20.myGLSurfaceView;
-import common.FrameCounter;
 
+import common.FrameCounter;
+import ius.GameObject;
 import ius.Scene;
 import ius.Util;
 
@@ -22,20 +20,19 @@ public class SceneINGAME extends Scene{
 	ArrayList<GameObject> bullet;
 	ArrayList<GameObject> monster;
 	ArrayList<GameObject> particle;
+	GameObject life[];
 	GAME_MapManager GMM;
 	
 	long playtime;
 	
-	public SceneINGAME(Context context, myGLSurfaceView gl20){
-		super(context, gl20);
+	public SceneINGAME(myGLSurfaceView gl20){
+		super(gl20);
 	}
 	public void Init(){
-		mGL20.inputManager.SetInput(mContext, mGL20, true);
-		mGL20.timeManager.AddTimer("TotalTimer", 1.0f);
-		mGL20.soundManager.LoadSound("cheetahmen.mp3",  true);
-		mGL20.soundManager.LoadSound("menu_select.mp3", false);
+		IM.SetInput(true);
+		TM.AddTimer("TotalTimer", 1.0f);
 		
-		mGL20.inputManager.setButtonObject(
+		IM.setButtonObject(
 				"spr_util", 0, 0, 
 				screenWidth-50f, screenHeight-40f,
 				0f, 0.5f,
@@ -45,37 +42,35 @@ public class SceneINGAME extends Scene{
 		
 		playtime =0;
 		SCORE = 0;
-		LIFE = 100;
+		LIFE = 5;
 		bullet = new ArrayList<GameObject>();
 		monster = new ArrayList<GameObject>();
 		particle = new ArrayList<GameObject>();
-		GMM = new GAME_MapManager(mContext, mGL20 ,monster);
+		GMM = new GAME_MapManager(mGL20 ,monster);
 		
-		bg = mGL20.objectmanager.newItem(
-				mContext, mGL20,
+		life = new GameObject[5];
+		for(int i=0; i<LIFE;i++)
+			life[i] = OM.newItem(
+					"spr_cheetahmen_1", 3, 1,
+					145f+24f*i,screenHeight-52f,
+					0f, 3.0f);
+		
+		bg = OM.newItem(
 				"spr_util", 1, 1,
 				myGLRenderer.mScreenWidth*0.5f, myGLRenderer.mScreenHeight*0.5f,
 				0f, 1.0f);
 		
-		player = mGL20.objectmanager.newItem(
-				mContext, mGL20,
+		player = OM.newItem(
 				"spr_cheetahmen_1", 0, 0,
 				100f, 195f,
 				0f, 3.0f);
 		player.fPower = 0f;
 		player.fSpeed = 200f;
 		player.bDeath = false;
-		player.time = mGL20.timeManager.AddTimer(1.0f,false);
+		player.time = TM.AddTimer(1.0f,false);
 		
-		mGL20.soundManager.PlayBGMSound();
+		SM.PlayBGMSound("cheetahmen.mp3");
 		setShader(0);	//default Shader
-	}
-	public void Destroy(){
-		/* Before Destroy, must call Manager's clearFuction */
-		mGL20.timeManager.ClearTime();
-		mGL20.soundManager.ClearSound();
-		mGL20.inputManager.deleteButtonObject();
-		mGL20.objectmanager.ClearItem();
 	}
 	protected void Draw(){
 		
@@ -98,36 +93,39 @@ public class SceneINGAME extends Scene{
 			if(!tmp_particle.bDeath)
 				tmp_particle.Draw();
 		}
+		for(int i=0;i<LIFE;i++)
+			life[i].Draw();
+		
 		if(!player.bDeath)
 			player.Draw();
 		
-		mGL20.inputManager.draw();
+		IM.draw();
 		
-		mGL20.fontManager.FontBegin();
-		mGL20.fontManager.draw(
+		FM.FontBegin();
+		FM.draw(
 				"PLAY TIME : " + playtime,
 				screenWidth/2,screenHeight-25f,true,
 				0x00000000,
 				1.0f);
-		mGL20.fontManager.draw(
+		FM.draw(
 				"FPS : " + FrameCounter.getFrameCount(),
 				screenWidth/2,screenHeight-55f,true,
 				0x00000000,
 				1.0f);
-		mGL20.fontManager.draw(
+		FM.draw(
 				"SCORE : " + int2String(SCORE),
 				10f,screenHeight-40f,false,
-				0x000000FF,
+				0x00000000,
 				1.0f);
-		mGL20.fontManager.draw(
-				"LIFE : " + LIFE,
+		FM.draw(
+				"LIFE ",
 				10f,screenHeight-70f,false,
-				0x000000FF,
+				0x00000000,
 				1.0f);
-		mGL20.fontManager.FontEnd();
+		FM.FontEnd();
 	}
 	protected void Update(float INTERVAL){
-		mGL20.timeManager.time(INTERVAL);
+		TM.time(INTERVAL);
 		/* 시간 관련 Update 처리 함수 */
 		processTime();
 
@@ -171,7 +169,7 @@ public class SceneINGAME extends Scene{
 			// 이외의 모션은 멈춤 모션으로 변경
 			player.iState = 0; // stayMotion
 		
-		if(mGL20.inputManager.LEFT){
+		if(IM.LEFT){
 			if(!player.fleep) player.fleep = true;
 			player.iState = 1; // moveMotion
 			player.ani_num = 0;
@@ -181,7 +179,7 @@ public class SceneINGAME extends Scene{
 			else
 				player.x = player.Get_HalfWidth();
 		}
-		else if(mGL20.inputManager.RIGHT){
+		else if(IM.RIGHT){
 			if(player.fleep) player.fleep = false;
 			player.iState = 1; // moveMotion
 			player.ani_num = 0;
@@ -194,14 +192,13 @@ public class SceneINGAME extends Scene{
 			}
 		}
 
-		if(mGL20.inputManager.A)
+		if(IM.A)
 			/* 총알 연사 속도 처리 */
 			if(player.time.isOn()){
 				player.iState = 2; // attackMotion
 				player.ani_num = 1;
 				// 총알 생성
-				GameObject tmp_bullet = mGL20.objectmanager.newItem(
-						mContext, mGL20,
+				GameObject tmp_bullet = OM.newItem(
 						"spr_cheetahmen_1", 3, 0,
 						player.x+((player.fleep == false)?40f:-40f), player.y+40f,
 						0f, 3.0f);
@@ -210,7 +207,7 @@ public class SceneINGAME extends Scene{
 				tmp_bullet.fSpeed = 480f;
 				bullet.add(tmp_bullet);
 			}
-		if(mGL20.inputManager.B && isLand){
+		if(IM.B && isLand){
 			player.bJump = true; // jumpMotion
 			// 높이 제한 설정
 			player.fLimit = player.y+150f;
@@ -226,8 +223,8 @@ public class SceneINGAME extends Scene{
 				player.iPreState = player.iState;		
 		}
 		
-		if(mGL20.inputManager.getActive(2)){
-			mGL20.ChangeScene(this, new SceneTITLE(mContext, mGL20));
+		if(IM.getActive(2)){
+			mGL20.ChangeScene(this, new SceneTITLE(mGL20));
 		}
 		/* 몬스터 움직임 처리 */
 		for(int i=0; i<monster.size();i++){
@@ -236,6 +233,7 @@ public class SceneINGAME extends Scene{
 			for(int j=0; j<bullet.size();j++){
 				GameObject tmp_bullet = bullet.get(j);
 				if(Util.RectCrashObject2Object_A(tmp_monster, 0f, tmp_bullet, 0f)){
+					SM.PlaySound("hit.wav", false);
 					tmp_bullet.bDeath = true;
 					tmp_monster.bDeath = true;
 					useParticle(tmp_monster.x, tmp_monster.y, 1);
@@ -249,11 +247,11 @@ public class SceneINGAME extends Scene{
 				//TODO 라이프 감소
 				
 				if(!player.bDeath){
-					if(LIFE<=0)
+					SM.PlaySound("hurt.wav", false);
+					--LIFE;
+					if(LIFE<1)
 						// 게임 종료
 						DeadTrag();
-					else
-						LIFE -= 20;
 				}
 				tmp_monster.bDeath = true;
 			}
@@ -264,7 +262,7 @@ public class SceneINGAME extends Scene{
 					|| tmp_monster.x < 0f){
 				// delete monster
 				monster.remove(i--);
-				mGL20.objectmanager.RemoveItem(tmp_monster);
+				OM.RemoveItem(tmp_monster);
 			}
 		}
 		/* 총알 움직임 처리 */
@@ -277,7 +275,7 @@ public class SceneINGAME extends Scene{
 					|| tmp_bullet.x < 0f){
 				// delete bullet
 				bullet.remove(i--);
-				mGL20.objectmanager.RemoveItem(tmp_bullet);
+				OM.RemoveItem(tmp_bullet);
 			}
 		}
 		/* 파티클 처리 */
@@ -291,7 +289,7 @@ public class SceneINGAME extends Scene{
 		if(player.bDeath){
 			if(doFadeOut(INTERVAL, 0.2f))
 				// 게임화면으로 전환함
-				mGL20.ChangeScene(this, new SceneINGAME(mContext, mGL20));
+				mGL20.ChangeScene(this, new SceneINGAME(mGL20));
 		}
 		//SetQuakeSize(20f, 2.0f);
 		//setFadeState(1.0f);
@@ -301,7 +299,7 @@ public class SceneINGAME extends Scene{
 	}
 	private void processTime(){
 		/* 프레임 측정 시간 처리*/
-		if(mGL20.timeManager.EvnetOnTimer("TotalTimer"))
+		if(TM.EvnetOnTimer("TotalTimer"))
 			++playtime;
 	}
 	@Override
@@ -319,8 +317,7 @@ public class SceneINGAME extends Scene{
 				return ;
 			}
 		}
-		GameObject tmp_particle = mGL20.objectmanager.newItem(
-					mContext, mGL20,
+		GameObject tmp_particle = OM.newItem(
 					"spr_cheetahmen_1", 6, 0,
 					myGLRenderer.mScreenWidth*0.5f, myGLRenderer.mScreenHeight*0.5f,
 					0f, 3.0f);
@@ -354,7 +351,7 @@ public class SceneINGAME extends Scene{
 		return returnString;
 	}
 	private void DeadTrag(){
-		mGL20.soundManager.PauseBGMSound(false);
+		SM.PlayBGMSound("deadtrag.mp3");
 		useParticle(player.x, player.y, 3);
 		player.bDeath = true;
 		// 흑백 세이더 설정함

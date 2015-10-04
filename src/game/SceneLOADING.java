@@ -1,10 +1,8 @@
 package game;
 
-import android.content.Context;
-
-import com.example.opengles20.GameObject;
 import com.example.opengles20.myGLSurfaceView;
 
+import ius.GameObject;
 import ius.Scene;
 
 public class SceneLOADING extends Scene{
@@ -12,37 +10,37 @@ public class SceneLOADING extends Scene{
 	int fadeState;
 	GameObject BG;
 	
-	public SceneLOADING(Context context, myGLSurfaceView gl20) {
-		super(context, gl20);
+	public SceneLOADING(myGLSurfaceView gl20) {
+		super( gl20);
 	}
 
 	@Override
 	public void Init() {
 		/* TODO 시간이 걸리는 texture를 미리 읽음 */
-		mGL20.atlasManager.setAtlas(mContext, "spr_bg");
-		mGL20.atlasManager.setAtlas(mContext, "spr_cheetahmen_1");
-		mGL20.atlasManager.setAtlas(mContext, "spr_map_object");
-		mGL20.atlasManager.setAtlas(mContext, "spr_util");
+		AM.setAtlas("spr_bg");
+		AM.setAtlas("spr_cheetahmen_1");
+		AM.setAtlas("spr_map_object");
+		AM.setAtlas("spr_util");
+		/* TODO 시간이 걸리는 sound를 미리 읽음 */
+		SM.LoadSound("title.mp3",  true);
+		SM.LoadSound("cheetahmen.mp3",  true);
+		SM.LoadSound("deadtrag.mp3", true);
+		SM.LoadSound("menu_select.mp3", false);
+		SM.LoadSound("hit.wav", false);
+		SM.LoadSound("hurt.wav", false);
 		
-		BG = mGL20.objectmanager.newItem(
-				mContext, mGL20,
-				"spr_util", 1, 1,
+		BG = OM.newItem(
+				"spr_util", 1, 2,
 				screenWidth*0.5f, screenHeight*0.5f,
-				0f, 1.0f);
+				0f, 3.0f);
 		fadeState = 0;
 		setShader(0);	//default Shader
 	}
 
 	@Override
-	public void Destroy() {
-		// TODO Auto-generated method stub
-		mGL20.objectmanager.ClearItem();
-	}
-
-	@Override
 	protected void Draw() {
 		// TODO Auto-generated method stub
-		BG.Draw(screenWidth, screenHeight);
+		BG.Draw();
 	}
 
 	@Override
@@ -64,8 +62,7 @@ public class SceneLOADING extends Scene{
 		case 3:
 			if(doFadeOut(INTERVAL, 0.3f))
 				//TODO change nextScene
-				//mGL20.ChangeScene(this, new SceneTITLE(mContext, mGL20));
-				mGL20.ChangeScene(this, new SceneINGAME(mContext, mGL20));
+				mGL20.ChangeScene(this, new SceneINGAME(mGL20));
 			break;
 		}
 	}

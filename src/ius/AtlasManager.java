@@ -72,12 +72,22 @@ public class AtlasManager {
 
 	/* Sprite 정보들은 HashMap으로 관리되고 검색됨 */
 	private HashMap<String, texture> arr_TexturePOS;
+	private Context mContext;
+	private static AtlasManager instance;
 
-	public AtlasManager() {
+	public static AtlasManager getInstance() {
+		if (instance == null) {
+			instance = new AtlasManager();
+		}
+		return instance;
+	}
+	private AtlasManager() {
 		arr_TexturePOS = new HashMap<String, texture>();
 	}
-
-	public void setAtlas(Context mContext, String spr_name) {
+	public void LoadAtlasManager(Context context){
+		mContext = context;
+	}
+	public void setAtlas(String spr_name) {
 		// TODO 중복 예외처리를 추가해야함
 		getTexturePOS(mContext, spr_name, getBitmap(mContext, spr_name));
 	}
