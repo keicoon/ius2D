@@ -1,0 +1,92 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* .idea\
+* .idea\ius2D.iml
+* .idea\modules.xml
+* .idea\vcs.xml
+* .idea\workspace.xml
+* LICENSE
+* README.md
+* ic_launcher-web.png
+* image\
+* image\capture1.PNG
+* image\capture2.PNG
+* proguard-project.txt
+* tools\
+* tools\mfc_2dSpriteTool\
+* tools\mfc_2dSpriteTool\MainFrm.cpp
+* tools\mfc_2dSpriteTool\MainFrm.h
+* tools\mfc_2dSpriteTool\PictureStatic.cpp
+* tools\mfc_2dSpriteTool\PictureStatic.h
+* tools\mfc_2dSpriteTool\ReadMe.txt
+* tools\mfc_2dSpriteTool\RightView.cpp
+* tools\mfc_2dSpriteTool\RightView.h
+* tools\mfc_2dSpriteTool\Splitter_Static.clw
+* tools\mfc_2dSpriteTool\Splitter_Static.cpp
+* tools\mfc_2dSpriteTool\Splitter_Static.dsp
+* tools\mfc_2dSpriteTool\Splitter_Static.dsw
+* tools\mfc_2dSpriteTool\Splitter_Static.h
+* tools\mfc_2dSpriteTool\Splitter_Static.opt
+* tools\mfc_2dSpriteTool\Splitter_Static.plg
+* tools\mfc_2dSpriteTool\Splitter_Static.rc
+* tools\mfc_2dSpriteTool\Splitter_Static.sln
+* tools\mfc_2dSpriteTool\Splitter_Static.vcxproj
+* tools\mfc_2dSpriteTool\Splitter_Static.vcxproj.filters
+* tools\mfc_2dSpriteTool\Splitter_StaticDoc.cpp
+* tools\mfc_2dSpriteTool\Splitter_StaticDoc.h
+* tools\mfc_2dSpriteTool\Splitter_StaticView.cpp
+* tools\mfc_2dSpriteTool\Splitter_StaticView.h
+* tools\mfc_2dSpriteTool\StdAfx.cpp
+* tools\mfc_2dSpriteTool\StdAfx.h
+* tools\mfc_2dSpriteTool\UpgradeLog.htm
+* tools\mfc_2dSpriteTool\res\
+* tools\mfc_2dSpriteTool\res\Splitter_Static.ico
+* tools\mfc_2dSpriteTool\res\Splitter_Static.rc2
+* tools\mfc_2dSpriteTool\res\Splitter_StaticDoc.ico
+* tools\mfc_2dSpriteTool\res\Toolbar.bmp
+* tools\mfc_2dSpriteTool\resource.h
+* tools\mfc_2dSpriteTool\test.dat
+
+Replaced Jars with Dependencies:
+--------------------------------
+The importer recognized the following .jar files as third party
+libraries and replaced them with Gradle dependencies instead. This has
+the advantage that more explicit version information is known, and the
+libraries can be updated automatically. However, it is possible that
+the .jar file in your project was of an older version than the
+dependency we picked, which could render the project not compileable.
+You can disable the jar replacement in the import wizard and try again:
+
+android-support-v4.jar => com.android.support:support-v4:22.2.1
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* AndroidManifest.xml => app\src\main\AndroidManifest.xml
+* assets\ => app\src\main\assets\
+* res\ => app\src\main\res\
+* src\ => app\src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+If for some reason your project does not build, and you determine that
+it is due to a bug or limitation of the Eclipse to Gradle importer,
+please file a bug at http://b.android.com with category
+Component-Tools.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)
